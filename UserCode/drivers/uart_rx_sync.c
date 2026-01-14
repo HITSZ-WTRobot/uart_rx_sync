@@ -116,9 +116,9 @@ void UartRxSync_RxErrorHandler(UartRxSync_t* sync)
     __HAL_UART_CLEAR_OREFLAG(sync->huart);
 
     // restart receive
+    HAL_UART_AbortReceive(sync->huart);
     if (sync->sync_state != UART_RX_SYNC_WAIT_HEAD)
     {
-        HAL_UART_DMAStop(sync->huart);
         sync->sync_state = UART_RX_SYNC_WAIT_HEAD;
     }
     HAL_UART_Receive_IT(sync->huart, sync->buffer, 1);
@@ -138,7 +138,7 @@ void UartRxSync_RxCallback(UartRxSync_t* sync)
         {
             // 帧头错误，重新匹配
             HDR_ERROR(sync);
-            HAL_UART_DMAStop(sync->huart);
+            HAL_UART_AbortReceive(sync->huart);
             sync->sync_state = UART_RX_SYNC_WAIT_HEAD;
             HAL_UART_Receive_IT(sync->huart, sync->buffer, 1);
             sync->hdr_idx = 0;
@@ -172,7 +172,7 @@ void UartRxSync_RxCallback(UartRxSync_t* sync)
     else if (sync->sync_state == UART_RX_SYNC_RECEIVING)
     {
         RECEIVED(sync);
-        HAL_UART_DMAStop(sync->huart);
+        HAL_UART_AbortReceive(sync->huart);
         /**
          * 由于 decode 抛弃了 head，所以这里可以先开始接收
          * 只要保证 decode 时间 < 1 / bitrate * 10 * header_len 即可
