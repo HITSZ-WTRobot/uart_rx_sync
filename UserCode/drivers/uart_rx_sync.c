@@ -59,6 +59,8 @@ void UartRxSync_Init(UartRxSync_t* sync, const UartRxSync_Config_t* config)
 
     sync->hdr_idx    = 0;
     sync->sync_state = UART_RX_SYNC_WAIT_HEAD;
+
+    HAL_UART_Receive_IT(sync->huart, sync->buffer, 1);
 }
 /**
  * 从环形缓冲区检查 header
