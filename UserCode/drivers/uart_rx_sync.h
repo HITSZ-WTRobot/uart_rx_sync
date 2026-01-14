@@ -66,8 +66,8 @@ typedef struct
 
     struct
     {
-        size_t   len;
-        uint8_t* content;
+        size_t         len;
+        const uint8_t* content;
     } header;
 
     size_t frame_len;
