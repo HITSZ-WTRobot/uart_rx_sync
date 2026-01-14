@@ -109,6 +109,11 @@ static void decode(UartRxSync_t* sync)
  */
 void UartRxSync_RxErrorHandler(UartRxSync_t* sync)
 {
+    if (sync->huart->ErrorCode == HAL_UART_ERROR_NONE)
+    {
+        // not a real uart error
+        return;
+    }
     RX_ERROR_EVENT(sync);
 
     // clear error flags
